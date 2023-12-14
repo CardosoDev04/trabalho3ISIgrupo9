@@ -210,52 +210,37 @@ class App
         }
     }
   
-    private void updateBikeState()
-    {
+    private void updateBikeState() {
         try(Connection con = DriverManager.getConnection(getConnectionString())) {
             int bikeID = Integer.valueOf(Model.inputData("Bike ID:\n"));
-            String newState = Model.inputData("New bike state: (em manutencao, ocupado, livre)\n");
 
-            if(Objects.equals(newState, "em manutencao") || Objects.equals(newState, "ocupado") || Objects.equals(newState, "livre")) {
-                String selectStateQuery = "SELECT estado FROM BICICLETA WHERE id = ?";
-                String currentState = "";
-                try (PreparedStatement ps = con.prepareStatement(selectStateQuery)) {
-                    ps.setInt(1, bikeID);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        if (rs.next()) {
-                            currentState = rs.getString("estado");
-                        }
-                    }
-                }
-
-                if (!currentState.equals(newState)) {
-                    String updateQuery = "UPDATE BICICLETA SET estado = ? WHERE id = ?";
-                    try (PreparedStatement ps = con.prepareStatement(updateQuery)) {
-                        ps.setString(1, newState);
-                        ps.setInt(2, bikeID);
-                        int affectedRows = ps.executeUpdate();
-
-                        if (affectedRows > 0) {
-                            System.out.println("Bike state updated successfully.");
-
-                        } else {
-                            System.out.println("Bike state not updated.");
-                        }
-                    }
-                }
-                else {
-                    System.out.println("Bike state is already " + newState + ".");
-                    updateBikeState();
-                }
+            if(Restriction.inState("livre",con,bikeID)) {
+                Restriction.setCurrentState(con,bikeID,"em manutencao");
             }
             else {
-                System.out.println("Invalid bike state. Please enter em manutencao, ocupado or livre.");
-                updateBikeState();
+                String currentState = Restriction.getCurrentState(con,bikeID);
+                System.out.println("Error: Cannot update state, bike is currently: " + currentState);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void printQueryResults(Connection con, String query){
+
+        try(PreparedStatement ps = con.prepareStatement(query)) {
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+
+                    printResults(rs);
+                }
+            }
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 
     private void calculateAverageMetricsForElectricBikes()
@@ -292,7 +277,8 @@ class App
     }
 }
 
-public class Ap{
+public class
+Ap{
     public static void main(String[] args) throws Exception{
         
         String url = "jdbc:postgresql://10.62.73.58:5432/?user=isi9&password=grupo9&ssl=false";
