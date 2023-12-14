@@ -27,6 +27,7 @@ package jdbc;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.HashMap;
 interface DbWorker
@@ -211,8 +212,49 @@ class App
   
     private void updateBikeState()
     {
-        // TODO
-        System.out.println("updateBikeState()");
+        try(Connection con = DriverManager.getConnection(getConnectionString())) {
+            int bikeID = Integer.valueOf(Model.inputData("Bike ID:\n"));
+            String newState = Model.inputData("New bike state: (em manutencao, ocupado, livre)\n");
+
+            if(Objects.equals(newState, "em manutencao") || Objects.equals(newState, "ocupado") || Objects.equals(newState, "livre")) {
+                String selectStateQuery = "SELECT estado FROM BICICLETA WHERE id = ?";
+                String currentState = "";
+                try (PreparedStatement ps = con.prepareStatement(selectStateQuery)) {
+                    ps.setInt(1, bikeID);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            currentState = rs.getString("estado");
+                        }
+                    }
+                }
+
+                if (!currentState.equals(newState)) {
+                    String updateQuery = "UPDATE BICICLETA SET estado = ? WHERE id = ?";
+                    try (PreparedStatement ps = con.prepareStatement(updateQuery)) {
+                        ps.setString(1, newState);
+                        ps.setInt(2, bikeID);
+                        int affectedRows = ps.executeUpdate();
+
+                        if (affectedRows > 0) {
+                            System.out.println("Bike state updated successfully.");
+
+                        } else {
+                            System.out.println("Bike state not updated.");
+                        }
+                    }
+                }
+                else {
+                    System.out.println("Bike state is already " + newState + ".");
+                    updateBikeState();
+                }
+            }
+            else {
+                System.out.println("Invalid bike state. Please enter em manutencao, ocupado or livre.");
+                updateBikeState();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
