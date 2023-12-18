@@ -61,33 +61,42 @@ public class Model {
     
 
     static void addClassicBike(ClassicBike bike)
-    {    
-        //TODO
+    {
+
+        String query = "INSERT INTO CLASSICA (bicicleta, nomudanca) VALUES (?, ?)";
         try (
                 Connection con = DriverManager.getConnection(App.getInstance().getConnectionString());
-                //PreparedStatement pstmt = con.prepareStatement(INSERT_CMD);
+                PreparedStatement ps = con.prepareStatement(query);
 
-        ) {         
-            // TODO
+        ) {
+            ps.setInt(1, bike.getId());
+            ps.setInt(2, bike.getNoMudanca());
+            ps.executeUpdate();
+
             System.out.println("Classic bike registered!!!!");
         } catch (SQLException e) {
-            e.getMessage();
+            e.printStackTrace();
             System.out.println("Error on insert values");
         }
     }
 
     static void addElectricBike(ElectricBike bike)
-    {    
-        //TODO
+    {
+        String query = "INSERT INTO ELETRICA (id, autonomia, velocidade_max) VALUES (?, ?, ?)";
+
         try (
                 Connection con = DriverManager.getConnection(App.getInstance().getConnectionString());
-                //PreparedStatement pstmt = con.prepareStatement(INSERT_CMD);
+                PreparedStatement ps = con.prepareStatement(query);
 
         ) {         
-            // TODO
+            ps.setInt(1, bike.getId());
+            ps.setDouble(2, bike.getAutonomia());
+            ps.setDouble(3, bike.getVelocidadeMaxima());
+
+            ps.executeUpdate();
             System.out.println("Electric bike registered!!!!");
         } catch (SQLException e) {
-            e.getMessage();
+            e.printStackTrace();
             System.out.println("Error on insert values");
         }
     }
