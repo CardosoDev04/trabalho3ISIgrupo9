@@ -216,7 +216,7 @@
             try (Connection con = DriverManager.getConnection(getConnectionString())) {
                 int bikeID = Integer.valueOf(Model.inputData("Bike ID:\n"));
 
-                if (Restriction.inState("livre", con, bikeID)) {
+                if (Restriction.inState("livre", con, bikeID) || Restriction.inState("ocupado", con, bikeID)) {
                     Restriction.setCurrentState(con, bikeID, "em manutencao");
                 } else {
                     String currentState = Restriction.getCurrentState(con, bikeID);
