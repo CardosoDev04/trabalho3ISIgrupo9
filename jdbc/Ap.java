@@ -422,7 +422,9 @@
             }
         }
 
-
+        /**
+         * This function allows the user to update the constraint of the mudanca attribute to have a new set of values.
+         */
         private void updateMudancaConstraint(){
             int[] newValues = Model.inputData("New values for the constraint (separated by commas): ").chars().filter(ch -> ch != ' ').toArray();
 
