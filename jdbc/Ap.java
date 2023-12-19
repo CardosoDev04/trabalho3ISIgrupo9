@@ -160,27 +160,33 @@
 
         private static final int TAB_SIZE = 24;
 
+        /**
+         * This function prints a result set in a table formatted way.
+         * @param dr
+         * @throws SQLException
+         */
         void printResults(ResultSet dr) throws SQLException {
             ResultSetMetaData metaData = dr.getMetaData();
             int columnN = metaData.getColumnCount();
 
             for (int i = 1; i <= columnN; i++) {
-                // Faz print aos nomes de coluna com - justificado à esquerda e com o espaçamento de TAB_SIZE
+                // Prints column names
                 System.out.printf("%-" + TAB_SIZE + "s", metaData.getColumnName(i));
             }
             System.out.println();
 
             for (int i = 1; i <= columnN; i++) {
-                // Faz print da linha separadora por baixo dos nomes de coluna
+                // Prints the divider line
                 System.out.print("-".repeat(TAB_SIZE));
             }
             System.out.println();
 
-            dr.beforeFirst(); // Move the cursor back to the beginning
+            // Moves the cursor to the first row
+            dr.beforeFirst();
 
             while (dr.next()) {
                 for (int i = 1; i <= columnN; i++) {
-                    // Faz print aos valores de cada linha com - justificado à esquerda e com o espaçamento de TAB_SIZE
+                    // Prints the row values
                     System.out.printf("%-" + TAB_SIZE + "s", dr.getString(i));
                 }
                 System.out.println();
@@ -212,6 +218,10 @@
             }
         }
 
+
+        /**
+         * This function allows the user to update the state of a bike to "em manutencao".
+         */
         private void updateBikeState() {
             try (Connection con = DriverManager.getConnection(getConnectionString())) {
                 int bikeID = Integer.valueOf(Model.inputData("Bike ID:\n"));
@@ -227,6 +237,12 @@
             }
         }
 
+        /**
+         * This function prints the results of a query. It makes use of the printResults function to
+         * which it passes a ResultSet.
+         * @param con
+         * @param query
+         */
         private void printQueryResults(Connection con, String query) {
 
             try (PreparedStatement ps = con.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
@@ -239,6 +255,11 @@
                 e.printStackTrace();
             }
         }
+
+        /**
+         * This function calculates the average metrics for electric bikes of a user selected brand.
+         * It gives an average for the maximum speed and range of the bikes.
+         */
 
         private void calculateAverageMetricsForElectricBikes() {
 
@@ -305,6 +326,10 @@
 
         }
 
+        /**
+         * This function prints the clients with the most reservations in the year 2023.
+         */
+
         private void getClientsWithReservations() {
             String clientQuery = "SELECT p.id, p.nome, p.morada, p.nacionalidade, COUNT(cr.reserva) as reservas " +
                     "FROM PESSOA p " +
@@ -330,6 +355,10 @@
 
         }
 
+        /**
+         * This function prints the GPS devices of bikes in a user selected state.
+         */
+
         private void getGPSDevice() {
             String state = Model.inputData("State of the bike (livre, ocupado, em manutencao): ");
             String deviceQuery = "SELECT d.noserie, d.latitude, d.longitude " +
@@ -347,6 +376,9 @@
 
         }
 
+        /**
+         * This function prints the stores with the most reservations in a user selected period of time.
+         */
         private void getStores() {
             String qty = Model.inputData("Number of reservations: ");
             Timestamp dateStart = Timestamp.valueOf(Model.inputData("Start date (yyyy-mm-dd hh:mm:ss): "));
@@ -370,6 +402,9 @@
 
         }
 
+        /**
+         * This function prints the managers with the most reservations.
+         */
         private void getManagers() {
             String managersQuery = "SELECT DISTINCT p.nome, p.morada, p.telefone " +
                     "FROM pessoa p " +
