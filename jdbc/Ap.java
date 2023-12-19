@@ -421,6 +421,32 @@
                 e.printStackTrace();
             }
         }
+
+
+        private void updateMudancaConstraint(){
+            int[] newValues = Model.inputData("New values for the constraint (separated by commas): ").chars().filter(ch -> ch != ' ').toArray();
+
+            try(Connection con = DriverManager.getConnection(getConnectionString())) {
+                String query = "ALTER TABLE BICICLETA DROP CONSTRAINT IF EXISTS chk_mudanca";
+                try (PreparedStatement ps = con.prepareStatement(query)) {
+                    ps.executeUpdate(query);
+                }
+
+                StringBuilder newArray = new StringBuilder("ARRAY[1,6,18,24");
+
+                for(int value: newValues){
+                    newArray.append(",").append(value);
+                }
+                newArray.append("]");
+
+                try(PreparedStatement ps2 = con.prepareStatement("ALTER TABLE BICICLETA ADD CONSTRAINT chk_mudanca CHECK (mudanca IN (" + newArray + ") OR mudanca IS NULL)")){
+                    ps2.executeUpdate();
+                }
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
     }
 
     public class
