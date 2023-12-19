@@ -19,7 +19,7 @@ import java.util.Scanner;
 
 public class Model {
 
-    static String inputData(String str){
+    static String inputData(String str) {
         // IMPLEMENTED
         java.util.Scanner key = new Scanner(System.in);
         System.out.print("Enter corresponding values, separated by commas of: \n" + str);

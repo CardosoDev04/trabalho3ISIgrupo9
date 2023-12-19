@@ -250,6 +250,9 @@
                     if (rs.next()) {
                         printResults(rs);
                     }
+                    else{
+                        System.out.println("There are no results to your query.");
+                    }
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
